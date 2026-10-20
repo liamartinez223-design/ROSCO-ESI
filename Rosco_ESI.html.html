@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rosco ESI</title>
+<style>
+:root{--bg:#fbf7ff;--fg:#2a2036;--card:#fff;--mut:#6b6078;--pri:#6d28d9;--ok:#15803d;--no:#b91c1c;--pas:#b45309;--line:#e3d9f0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17111f;--fg:#f1eaf9;--card:#241a31;--mut:#b3a6c4;--pri:#a78bfa;--ok:#4ade80;--no:#f87171;--pas:#fbbf24;--line:#3a2d4d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17111f;--fg:#f1eaf9;--card:#241a31;--mut:#b3a6c4;--pri:#a78bfa;--ok:#4ade80;--no:#f87171;--pas:#fbbf24;--line:#3a2d4d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1{margin:0;font-size:1.4rem;text-align:center;padding:14px 12px 0;color:var(--pri)}
+.sub{text-align:center;color:var(--mut);margin:2px 0 0;font-size:.9rem}
+.wrap{max-width:1000px;margin:0 auto;padding:16px;display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:800px){.wrap{grid-template-columns:1fr 1fr;align-items:center}}
+.ring{position:relative;width:100%;max-width:500px;aspect-ratio:1;margin:auto}
+.n{position:absolute;width:10%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:clamp(11px,2.8vw,19px);background:var(--card);border:2px solid var(--line);transition:.2s}
+.n.cur{outline:3px solid var(--pri);transform:translate(-50%,-50%) scale(1.25);z-index:2}
+.n.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.n.no{background:var(--no);border-color:var(--no);color:#fff}
+.mid{position:absolute;inset:24%;display:grid;place-content:center;text-align:center}
+.t{font-size:clamp(2rem,9vw,3.4rem);font-weight:800;color:var(--pri);line-height:1}
+.sc{color:var(--mut);font-size:.9rem;margin-top:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.lab{font-size:.85rem;color:var(--pri);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.def{font-size:clamp(1.05rem,2.6vw,1.35rem);line-height:1.45;margin:10px 0;min-height:6.5em}
+.ans{font-size:1.5rem;font-weight:800;color:var(--ok);min-height:1.9em}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button{flex:1;min-width:90px;padding:12px;border:0;border-radius:10px;font-size:1rem;font-weight:700;color:#fff;cursor:pointer;background:var(--pri)}
+button:disabled{opacity:.4;cursor:default}
+.b-ok{background:var(--ok)}.b-no{background:var(--no)}.b-pas{background:var(--pas)}
+.b-sec{background:transparent;color:var(--pri);border:2px solid var(--pri)}
+:root:not([data-theme="light"]) .b-ok,:root:not([data-theme="light"]) .b-no,:root:not([data-theme="light"]) .b-pas{color:#111}
+</style></head><body>
+<h1>🔤 Rosco ESI</h1>
+<p class="sub">Educación Sexual Integral · 27 letras</p>
+<div class="wrap">
+ <div class="ring" id="ring"><div class="mid"><div class="t" id="time">300</div><div class="sc" id="score">✓ 0 · ✗ 0</div></div></div>
+ <div class="card">
+  <div class="lab" id="lab">Listo para jugar</div>
+  <div class="def" id="def">Unx promotorx lee la definición en voz alta y el equipo responde. Quien conduce marca si acertó, falló o dijo «pasapalabra». ¡Apretá Comenzar!</div>
+  <div class="ans" id="ans"></div>
+  <div class="row"><button id="start">Comenzar</button><button class="b-sec" id="rev" disabled>Ver respuesta</button></div>
+  <div class="row"><button class="b-ok" id="ok" disabled>✓ Acertó</button><button class="b-no" id="no" disabled>✗ Falló</button><button class="b-pas" id="pas" disabled>⏭ Pasapalabra</button></div>
+  <div class="row"><button class="b-sec" id="reset">Reiniciar</button><button class="b-sec" id="sfx">🔊 Sonidos: sí</button><button class="b-sec" id="mus">🎵 Música: sí</button></div>
+ </div>
+</div>
+<script>
+const D=[
+["A","Empieza con","Método o recurso para prevenir un embarazo no intencional. Puede ser de barrera, hormonal, intrauterino o permanente.","ANTICONCEPTIVO"],
+["B","Empieza con","Orientación sexual y/o romántica que implica atracción hacia personas del mismo género y también de otros géneros.","BISEXUALIDAD"],
+["C","Empieza con","Acuerdo libre, informado y entusiasta para participar en una práctica sexual o afectiva. El silencio o la duda no lo constituyen. También se expresa con señales no verbales (gestos, actitudes, lenguaje corporal) que muestran si hay o no acuerdo.","CONSENTIMIENTO"],
+["D","Empieza con","Garantías fundamentales que el Estado debe reconocer y proteger para todas las personas, sin importar su género u orientación sexual.","DERECHOS"],
+["E","Empieza con","Siglas del programa educativo nacional que aborda la sexualidad de manera integral: social, afectiva, psicológica y biológica.","ESI"],
+["F","Empieza con","Asesinato de una mujer motivado por razones de género; la expresión más extrema de la violencia machista. En Argentina ocurre uno cada casi 24 horas.","FEMICIDIO"],
+["G","Empieza con","Construcción social y cultural que organiza identidades y roles más allá del sexo asignado al nacer.","GÉNERO"],
+["H","Empieza con","Infección viral de transmisión sexual que produce ampollas o llagas en piel y mucosas. Es crónica y recurrente. Se previene con preservativo y su uso es fundamental.","HERPES (GENITAL)"],
+["I","Empieza con","Conjunto de rasgos, valores e historias que definen quién es una persona; en ESI se trabaja como un proceso en permanente construcción.","IDENTIDAD"],
+["J","Empieza con","Valor que garantiza un trato equitativo para todas las personas; principio central contra la discriminación y la violencia de género.","JUSTICIA"],
+["K","Empieza con","Arte marcial que ojalá nunca tengas que usar, pero que te encantaría dominar para defenderte de quienes no respetan un «no». Spoiler: la técnica más efectiva es entender el consentimiento.","KUNG FU"],
+["L","Empieza con","Sustancia que reduce la fricción durante las relaciones sexuales, favorece el placer y es compatible con el preservativo.","LUBRICANTE"],
+["M","Empieza con","Proceso por el cual el endometrio se desprende y es expulsado por la vagina cuando no ocurre un embarazo.","MENSTRUACIÓN"],
+["N","Empieza con","Palabra que, en el contexto del consentimiento, siempre debe ser respetada. Su presencia anula cualquier posibilidad de continuar.","NO"],
+["Ñ","Contiene la","Etapa del desarrollo humano que va del nacimiento a la adolescencia; la ESI también la contempla con contenidos adaptados.","NIÑEZ"],
+["O","Empieza con","Momento del ciclo menstrual en que el ovario libera un óvulo maduro; corresponde al período fértil.","OVULACIÓN"],
+["P","Empieza con","Método de barrera que previene a la vez el embarazo no intencional y las ITS. Es el único con doble protección.","PRESERVATIVO"],
+["Q","Empieza con","Término paraguas que agrupa identidades y orientaciones que no se ajustan a la norma heterosexual o cisgénero.","QUEER"],
+["R","Empieza con","Reconocimiento de la dignidad, los derechos y la autonomía de otra persona; valor fundamental para vínculos sanos.","RESPETO"],
+["S","Empieza con","Infección bacteriana de transmisión sexual causada por el Treponema pallidum; se previene con preservativo, cuyo uso es fundamental, y se trata con antibióticos.","SÍFILIS"],
+["T","Empieza con","Término que describe a personas cuya identidad de género no coincide con el sexo asignado al nacer.","TRANS"],
+["U","Empieza con","Órgano del sistema reproductor donde se implanta el óvulo fecundado y se desarrolla el embarazo. También llamado matriz.","ÚTERO"],
+["V","Empieza con","Siglas del virus que ataca el sistema inmune y puede derivar en sida si no se trata. Se previene con preservativo y su uso es fundamental.","VIH"],
+["W","Empieza con","Aplicación de mensajería donde también pueden ocurrir acoso virtual y difusión no consentida de imágenes íntimas.","WHATSAPP"],
+["X","Contiene la","Dimensión humana que engloba biología, emociones, identidad, vínculos y placer; va mucho más allá de la genitalidad.","SEXUALIDAD"],
+["Y","Empieza con","Pronombre de primera persona; en ESI es central porque cada persona es sujeto de derechos y protagonista de sus decisiones.","YO"],
+["Z","Empieza con","Parte del cuerpo que al ser estimulada produce placer. Conocer el propio cuerpo es parte de una sexualidad libre.","ZONA ERÓGENA"]];
+const $=id=>document.getElementById(id),ring=$("ring"),N=D.length,T0=300;
+let st,cur,left,run,tm;
+let AC,sfx=true,mus=true,mt=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
+function tone(f,d,type,vol,when,slide){const a=ac();if(!a)return;const t=a.currentTime+(when||0);const o=a.createOscillator(),g=a.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.2,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.02)}
+const snd={
+ ok(){if(sfx)[659,880,1319].forEach((f,i)=>tone(f,.18,"triangle",.25,i*.09))},
+ no(){if(sfx){tone(220,.4,"sawtooth",.18,0,80);tone(165,.4,"square",.1,0,60)}},
+ pas(){if(sfx){tone(520,.1,"sine",.2);tone(780,.14,"sine",.2,.1)}},
+ tick(urgent){if(sfx)tone(urgent?1300:850,.05,"square",urgent?.12:.05)},
+ end(){if(sfx)[784,659,523,392].forEach((f,i)=>tone(f,.3,"triangle",.22,.45+i*.18))}
+};
+const BASS=[110,110,165,110,131,131,196,131],ARP=[440,523,659,523,494,587,740,587];
+function stopMusic(){clearInterval(mt);mt=null}
+function musicOn(){stopMusic();if(!mus||!run)return;let i=0;mt=setInterval(()=>{tone(BASS[i%8],.22,"triangle",.09);if(i%2)tone(ARP[(i>>1)%8],.15,"sine",.035);i++},250)}
+const nodes=D.map((d,i)=>{const e=document.createElement("div");e.className="n";e.textContent=d[0];const a=(-90+i*360/N)*Math.PI/180;e.style.left=50+44*Math.cos(a)+"%";e.style.top=50+44*Math.sin(a)+"%";ring.appendChild(e);return e});
+function draw(){let o=0,x=0;nodes.forEach((e,i)=>{e.className="n"+(st[i]==1?" ok":st[i]==2?" no":"")+(run&&i==cur?" cur":"");if(st[i]==1)o++;if(st[i]==2)x++});$("score").textContent="✓ "+o+" · ✗ "+x;$("time").textContent=left}
+function show(){const d=D[cur];$("lab").textContent=d[0]+" · "+d[1]+" "+d[0];$("def").textContent=d[2];$("ans").textContent=""}
+function ctl(on){["ok","no","pas","rev"].forEach(i=>$(i).disabled=!on)}
+function next(){for(let k=1;k<=N;k++){const j=(cur+k)%N;if(st[j]==0){cur=j;return true}}return false}
+function end(){run=false;clearInterval(tm);stopMusic();snd.end();ctl(false);draw();const o=st.filter(s=>s==1).length;$("lab").textContent="¡Fin del juego!";$("def").textContent="Aciertos: "+o+" de "+N+". Pueden repasar las letras falladas o pendientes y charlar cada concepto.";$("ans").textContent=""}
+function mark(v){if(!run)return;st[cur]=v;v==1?snd.ok():snd.no();if(!st.includes(0))return end();next();draw();show()}
+function init(){clearInterval(tm);stopMusic();st=D.map(()=>0);cur=0;left=T0;run=false;ctl(false);draw();$("lab").textContent="Listo para jugar";$("def").textContent="Unx promotorx lee la definición en voz alta y el equipo responde. Quien conduce marca si acertó, falló o dijo «pasapalabra». ¡Apretá Comenzar!";$("ans").textContent="";$("start").disabled=false}
+$("start").onclick=()=>{run=true;ac();musicOn();$("start").disabled=true;ctl(true);draw();show();tm=setInterval(()=>{left--;$("time").textContent=left;if(left<=0)end();else snd.tick(left<=10)},1000)};
+$("ok").onclick=()=>mark(1);$("no").onclick=()=>mark(2);
+$("pas").onclick=()=>{if(run&&next()){snd.pas();draw();show()}};
+$("rev").onclick=()=>{if(run)$("ans").textContent=D[cur][3]};
+$("sfx").onclick=()=>{sfx=!sfx;$("sfx").textContent="🔊 Sonidos: "+(sfx?"sí":"no")};
+$("mus").onclick=()=>{mus=!mus;$("mus").textContent="🎵 Música: "+(mus?"sí":"no");if(run){mus?musicOn():stopMusic()}};
+$("reset").onclick=init;init();
+</script></body></html>
